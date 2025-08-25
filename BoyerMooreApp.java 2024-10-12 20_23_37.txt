@@ -1,0 +1,132 @@
+/*************************
+ * Name: Alysha Pursley
+ * Course: CS-201 Data Structures and Algorithms
+ * Date: October, 2024
+ * Description: This application uses the Boyer-Moore algorithm to search for 
+ * a user-input pattern in the names of 50 U.S. states.
+ ************************/
+
+import java.util.Scanner;
+
+public class BoyerMooreApp {
+
+    // Array of 50 U.S. state names
+    static String[] states = {
+        "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", 
+        "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", 
+        "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", 
+        "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", 
+        "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", 
+        "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", 
+        "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
+    };
+
+    // Method to display all the U.S. state names
+    static void displayStates() {
+        for (String state : states) {
+            System.out.println(state);
+        }
+    }
+
+    // Boyer-Moore search algorithm using the bad character rule
+    static void boyerMooreSearch(String text, String pattern) {
+        int[] badCharTable = buildBadCharTable(pattern); // Build the bad character table
+        int m = pattern.length(); // Length of the pattern
+        int n = text.length(); // Length of the text (state name)
+        int shift = 0; // Shift to keep track of the window of comparison
+
+        // Start searching the text using the Boyer-Moore algorithm
+        while (shift <= (n - m)) {
+            int j = m - 1; // Start comparing from the last character of the pattern
+
+            // Match pattern from right to left
+            while (j >= 0 && pattern.charAt(j) == text.charAt(shift + j)) {
+                j--;
+            }
+
+            // If the pattern is found
+            if (j < 0) {
+                System.out.println("Pattern found at index: " + shift); // Print the index where pattern matches
+                // Shift the pattern to the right
+                shift += (shift + m < n) ? m - badCharTable[text.charAt(shift + m)] : 1;
+            } else {
+                // Shift based on the bad character rule
+                shift += Math.max(1, j - badCharTable[text.charAt(shift + j)]);
+            }
+        }
+    }
+
+    // Method to build the bad character table for the Boyer-Moore algorithm
+    static int[] buildBadCharTable(String pattern) {
+        int[] table = new int[256]; // Initialize the table for ASCII characters
+        for (int i = 0; i < 256; i++) {
+            table[i] = -1; // Initialize all values as -1
+        }
+        for (int i = 0; i < pattern.length(); i++) {
+            table[pattern.charAt(i)] = i; // Set the last occurrence of each character in the pattern
+        }
+        return table; // Return the bad character table
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in); // Create a scanner to read user input
+
+        // Infinite loop for menu options
+        while (true) {
+            // Display the menu options
+            System.out.println("Menu:");
+            System.out.println("1) Display the text (U.S. states)");
+            System.out.println("2) Search a pattern in the states");
+            System.out.println("3) Exit program");
+
+            // Get user input for menu selection
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume the newline character
+
+            // Switch case to handle different options
+            switch (choice) {
+                case 1:
+                    // Display the list of U.S. states
+                    System.out.println("List of U.S. states:");
+                    displayStates();
+                    break;
+
+                case 2:
+                    // Search for a pattern in the state names
+                    System.out.print("Enter a pattern to search: ");
+                    String pattern = scanner.nextLine();
+                    System.out.println("Searching for pattern: " + pattern);
+                    // Search each state for the pattern
+                    for (String state : states) {
+                        boyerMooreSearch(state, pattern);
+                    }
+                    break;
+
+                case 3:
+                    // Exit the program
+                    System.out.println("Exiting program.");
+                    scanner.close();
+                    System.exit(0);
+                    break;
+
+                default:
+                    // Invalid option entered
+                    System.out.println("Invalid option, please try again.");
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
